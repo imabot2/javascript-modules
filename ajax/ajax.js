@@ -29,13 +29,11 @@ export var ajax = function(url='')
         return this;
     }
     
-    // Set method
-    // isAsync = true => asynchronous
-    // isAsync = false => synchronous
-    var method = function(isAsync)
+    // Set method (POST or GET)
+    var method = function(method)
     {
-        params.isAsync=isAsync;
-        return this;
+        params.method = method;
+        return;
     }
     
     // Push data (key and value)
@@ -72,5 +70,5 @@ export var ajax = function(url='')
         promise.resolve (request.responseText);
     }
     
-    return { data:data, url:url, method:method, send:send};
+    return { data:data, url:url, method:method, send:send };
 }
