@@ -8,4 +8,4 @@ This page presents a Vanilla JS (pure JavaScript) Ajax module with the following
 * can be load on the flight (JavaScript module)
 
 
-More details on [lucidar.me](https://lucidar.me/en/javascript-modules/ajax/)
+Documentation and examples on [lucidar.me](https://lucidar.me/en/javascript-modules/ajax/)
