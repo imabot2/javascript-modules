@@ -3,7 +3,7 @@
 
 This page presents a Vanilla JS (pure JavaScript) Ajax module with the following specifications:
 * easy to use
-* lightweight (529 bytes)
+* lightweight (less than 1kb)
 * method chaining
 * can be load on the flight (JavaScript module)
 
