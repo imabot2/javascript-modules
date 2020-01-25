@@ -42,19 +42,35 @@ export var ajax = (settings=undefined) => {
     }
     
     // Push data (key and value) or object
-    var data = function(objectOrKey, value=undefined) {
+    var data = function(objectOrKey, value) {
+    	push(objectOrKey, value)
+        return this;
+    }
+    
+    var push = function(objectOrKey, value)
+    {
     	switch (typeof objectOrKey)
         {
         	case 'object': params.data = Object.assign(objectOrKey, params.data); break;
             case 'string': params.data =  Object.assign({ [objectOrKey] : value}, params.data); break;
         }    	
-        return this;
     }
     
-
-    // Send request and return a promise
-    var send = function()
+	var post = function(data)
     {
+    	params.method='POST';
+        return send(data);
+    }
+    
+    var get = function(data)
+    {
+    	params.method='GET';
+        return send(data);
+    }
+    // Send request and return a promise
+    var send = function(data)
+    {
+    	push(data);
         return new Promise((resolve, reject) => {
             promise.resolve = resolve;
             promise.reject = reject;
@@ -68,16 +84,16 @@ export var ajax = (settings=undefined) => {
     
     // Callback function 
     var callBack = function()
-    {
+    {   	
         // Request not finished
         if (request.readyState != 4) return;
         
         // Check status and reject in case of failure
-        if (request.status<200 && request.status>201) { promise.reject(request); return; }
+        if (request.status<200 || request.status>201) { promise.reject(request); return; }
         
         // Success, resolve response
         promise.resolve (request.responseText);
     }
     
-    return { data:data, url:url, method:method, send:send };
+    return { data:data, url:url, method:method, send:send, post:post, get:get };
 }
