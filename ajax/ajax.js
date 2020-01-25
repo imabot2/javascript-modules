@@ -1,19 +1,26 @@
 // Simple Ajax module
 
 
-// Create an Ajax object, optional url can be set 
-
-export var ajax = function(url='')
-{
-    // Request parameters
-    let params = { 
-        method:'POST', 
-        url:url,
-        isAsync:true,
-        formData: new FormData(),
+// Create an Ajax object
+// Settings can be the API url
+// Settings can be an object the following keys: url, method and/or data
+// Each key is optionnal
+export var ajax = (settings=undefined) => {
+	// Contains the request parameters
+    let params = {};
+    
+    // Process constructor arguments
+    switch (typeof settings) {
+        case 'string' : params.url = settings; break
+        case 'object' : params = settings; break;
     }
+    
+    // Create the data key for future use
+    if (!('data' in params)) params.data = {};
+    if (!('method' in params)) params.method = 'POST';
+    
 
-    // Promise resolve and reject
+	// Promise resolve and reject
     let promise = {
         resolve:null,
         reject:null
@@ -23,23 +30,24 @@ export var ajax = function(url='')
     let request = new XMLHttpRequest();
     
     // Set URL
-    var url = function(url) 
-    { 
+    var url = function(url) {    
         params.url=url;
         return this;
     }
     
     // Set method (POST or GET)
-    var method = function(method)
-    {
+    var method = function(method) {
         params.method = method;
-        return;
+        return this;
     }
     
-    // Push data (key and value)
-    var data = function(key, value) 
-    { 
-        params.formData.append(key, value); 
+    // Push data (key and value) or object
+    var data = function(objectOrKey, value=undefined) {
+    	switch (typeof objectOrKey)
+        {
+        	case 'object': params.data = Object.assign(objectOrKey, params.data); break;
+            case 'string': params.data =  Object.assign({ [objectOrKey] : value}, params.data); break;
+        }    	
         return this;
     }
     
@@ -52,8 +60,9 @@ export var ajax = function(url='')
             promise.reject = reject;
     
             request.onreadystatechange = callBack;
-            request.open(params.method, params.url, params.isAsync);
-            request.send(params.formData);
+            request.open(params.method, params.url);           
+            request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            request.send( Object.keys(params.data).map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(params.data[key])) .join('&') );
         })
     }
     
@@ -64,7 +73,7 @@ export var ajax = function(url='')
         if (request.readyState != 4) return;
         
         // Check status and reject in case of failure
-        if (request.status != 200) { promise.reject(request.status); return; }
+        if (request.status<200 && request.status>201) { promise.reject(request); return; }
         
         // Success, resolve response
         promise.resolve (request.responseText);
