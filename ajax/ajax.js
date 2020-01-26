@@ -89,7 +89,7 @@ export var ajax = (settings=undefined) => {
         if (request.readyState != 4) return;
         
         // Check status and reject in case of failure
-        if (request.status<200 || request.status>201) { promise.reject(request); return; }
+        if (request.status<200 || request.status>299) { promise.reject(request); return; }
         
         // Success, resolve response
         promise.resolve (request.responseText);
